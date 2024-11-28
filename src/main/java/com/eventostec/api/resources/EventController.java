@@ -34,5 +34,33 @@ public class EventController {
         Event newEvent = this.eventService.createEvent(eventRequestDTO);
         return ResponseEntity.ok(newEvent);
     }
+	
+	   public EventDetailsDTO getEventDetails(UUID eventId) {
+	        Event event = repository.findById(eventId)
+	                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+	        Optional<Address> address = addressService.findByEventId(eventId);
+
+	        List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());
+
+	        List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream()
+	                .map(coupon -> new EventDetailsDTO.CouponDTO(
+	                        coupon.getCode(),
+	                        coupon.getDiscount(),
+	                        coupon.getValid()))
+	                .collect(Collectors.toList());
+
+	        return new EventDetailsDTO(
+	                event.getId(),
+	                event.getTitle(),
+	                event.getDescription(),
+	                event.getDate(),
+	                address.isPresent() ? address.get().getCity() : "",
+	                address.isPresent() ? address.get().getUf() : "",
+	                event.getImgUrl(),
+	                event.getEventUrl(),
+	                couponDTOs);
+	    }
+	
 
 }

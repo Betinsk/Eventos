@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.eventostec.api.domain.Coupon;
 import com.eventostec.api.domain.Event;
+import com.eventostec.api.domain.DTO.CouponRequestDTO;
 import com.eventostec.api.repositories.CouponRepository;
 import com.eventostec.api.repositories.EventRepository;
 

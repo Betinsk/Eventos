@@ -3,17 +3,15 @@ package com.eventostec.api.domain;
 import java.util.Date;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @Table(name = "event")
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 public class Event {
 	
 	@Id
@@ -24,9 +22,29 @@ public class Event {
 	private String description;
 	private String imgUrl;
 	private String eventUrl;
+	private String city;
+	private String uf;
 	
 	private Boolean remote;
 	private Date date;
+	
+	@OneToOne(mappedBy = "event", cascade = CascadeType.ALL)
+	private Address address;
+	
+	public Event() {
+		
+	}
+	
+	public Event(UUID id, String title, String description, String imgUrl, String eventUrl, Boolean remote, Date date) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.imgUrl = imgUrl;
+		this.eventUrl = eventUrl;
+		this.remote = remote;
+		this.date = date;
+	}
 	public UUID getId() {
 		return id;
 	}
@@ -70,7 +88,21 @@ public class Event {
 		this.date = date;
 	}
 	
-	
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getUf() {
+		return uf;
+	}
+
+	public void setUf(String uf) {
+		this.uf = uf;
+	}
 	
 	
 	

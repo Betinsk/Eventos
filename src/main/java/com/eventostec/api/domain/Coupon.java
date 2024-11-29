@@ -10,14 +10,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name= "coupon")
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Coupon {
@@ -34,4 +30,47 @@ public class Coupon {
 	@JoinColumn(name = "event_id")
 	private Event event;
 
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Integer getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Integer discount) {
+		this.discount = discount;
+	}
+
+	public Date getValid() {
+		return valid;
+	}
+
+	public void setValid(Date valid) {
+		this.valid = valid;
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
+	
+	
+	
 }

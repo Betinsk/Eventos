@@ -1,9 +1,14 @@
 package com.eventostec.api.resources;
 
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.eventostec.api.domain.Event;
 import com.eventostec.api.domain.DTO.EventRequestDTO;
+import com.eventostec.api.domain.DTO.EventResponseDTO;
+import com.eventostec.api.domain.event.EventDetailsDTO;
 import com.eventostec.api.services.EventService;
 
 @RestController
@@ -35,32 +42,34 @@ public class EventController {
         return ResponseEntity.ok(newEvent);
     }
 	
-	   public EventDetailsDTO getEventDetails(UUID eventId) {
-	        Event event = repository.findById(eventId)
-	                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-
-	        Optional<Address> address = addressService.findByEventId(eventId);
-
-	        List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());
-
-	        List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream()
-	                .map(coupon -> new EventDetailsDTO.CouponDTO(
-	                        coupon.getCode(),
-	                        coupon.getDiscount(),
-	                        coupon.getValid()))
-	                .collect(Collectors.toList());
-
-	        return new EventDetailsDTO(
-	                event.getId(),
-	                event.getTitle(),
-	                event.getDescription(),
-	                event.getDate(),
-	                address.isPresent() ? address.get().getCity() : "",
-	                address.isPresent() ? address.get().getUf() : "",
-	                event.getImgUrl(),
-	                event.getEventUrl(),
-	                couponDTOs);
+	@GetMapping
+		public ResponseEntity<List<EventResponseDTO>> getEvents(@RequestParam(defaultValue="0") int page, @RequestParam(defaultValue="10") int size){
+			List<EventResponseDTO> allEvents = this.eventService.getUpComingEvents(page, size);
+					return ResponseEntity.ok(allEvents);
+		}
+	 
+	
+	 @GetMapping("/filter")
+	    public ResponseEntity<List<EventResponseDTO>> getFilteredEvents(@RequestParam(defaultValue = "0") int page,
+	                                                                    @RequestParam(defaultValue = "10") int size,
+	                                                                    @RequestParam String city,
+	                                                                    @RequestParam String uf,
+	                                                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+	                                                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+	        List<EventResponseDTO> events = eventService.getFilteredEvents(page, size, city, uf, startDate, endDate);
+	        return ResponseEntity.ok(events);
 	    }
+	 
+	 
+
+	    @GetMapping("/{eventId}")
+	    public ResponseEntity<EventDetailsDTO> getEventDetails(@PathVariable UUID eventId) {
+	        EventDetailsDTO eventDetails = eventService.getEventDetails(eventId);
+	        return ResponseEntity.ok(eventDetails);
+	    }
+	 
+	
+
 	
 
 }
